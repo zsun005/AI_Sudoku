@@ -143,10 +143,6 @@ Variable* BTSolver::getMRV ( void )
         return minV;
     }
     return nullptr;
-<<<<<<< HEAD
-=======
-
->>>>>>> 45528ffa89e418d955de29255d847cdd46db268c
 }
 
 /**
