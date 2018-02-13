@@ -215,7 +215,7 @@ vector<int> BTSolver::getValuesLCVOrder ( Variable* v ) {
     }
     sort(elements.begin(), elements.end(), [=](pair<int, int>& a, pair<int, int>& b)
     {
-        return a.second < b.second;
+        return a.second > b.second;
     });
 //    for(int i = 0; i < elements.size(); i++)
 //        cout << elements[i].first << " " << elements[i].second << endl;
