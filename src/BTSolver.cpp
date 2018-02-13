@@ -122,7 +122,81 @@ Variable* BTSolver::getfirstUnassignedVariable ( void )
  */
 Variable* BTSolver::getMRV ( void )
 {
-	return nullptr;
+    vector <Variable * > vars;
+    for (Variable * v : network.getVariables()) {
+        if (!v->isAssigned()) {
+            vars.push_back(v);
+        }
+    }
+    if (!vars.empty()) {
+        int minSize = vars[0]->size();
+        Variable * minV = vars[0];
+        for (int i = 0; i < vars.size(); i++) {
+            if (minSize > vars[i]->size()) {
+                minSize = vars[i]->size();
+                minV = vars[i];
+            }
+        }
+        return minV;
+    }
+    return nullptr;
+/*
+    Variable * next = getfirstUnassignedVariable();
+    int current_domain_size = next->size();
+    ConstraintNetwork::VariableSet variables = network.getVariables();
+    for(Variable * v : variables){
+        cout<<v->toString()<<endl;
+        if(!v->isAssigned()){
+            if(v->size() < current_domain_size){
+                next = v;
+                current_domain_size = v->size();
+            }
+
+        }
+    }
+
+    Variable * next;
+    int current_domain_size = 0;
+    if(trail->size()==0){
+        next = getfirstUnassignedVariable();
+//        cout<<next->toString()<<endl;
+
+    } else {
+        next = std::get<0>(trail->getTrailStack().top());
+        cout<<next->toString()<<endl;
+    }
+    current_domain_size = next->size();
+    ConstraintNetwork::VariableSet neignbors = network.getNeighborsOfVariable(next);
+    for(auto n : neignbors){
+        if(n->size() < current_domain_size){
+            next = n;
+            current_domain_size = n->size();
+        }
+
+    }
+
+*/
+/*
+	int current_domain_size =0;
+	ConstraintNetwork::ConstraintRefSet constraintrefset = network.getModifiedConstraints();
+//    cout<<network.toString()<<endl;
+	for(auto constraint: constraintrefset) {
+        for (Variable *var : constraint->vars) {
+ //           cout<<var->toString()<<endl;
+            if (!var->isAssigned()) {
+                cout<<var->toString()<<endl;
+                ConstraintNetwork::VariableSet neighbors = network.getNeighborsOfVariable(var);
+                for (auto n : neighbors) {
+                    if (n->size() < current_domain_size) {
+                        current_domain_size = n->size();
+                        next = n;
+                    }
+                }
+            }
+        }
+    }
+    cout<<"entering mrv\n";
+*/
 }
 
 /**

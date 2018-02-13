@@ -23,7 +23,7 @@ public:
 	int size ( void );
 	int getPushCount ( void );
 	int getUndoCount ( void );
-
+	std::stack<std::pair <Variable*, Domain> > getTrailStack( void );
 	// Modifiers
 
 	// Places a marker in the trail
