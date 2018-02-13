@@ -1,8 +1,5 @@
 #include"BTSolver.hpp"
-#include <queue>
-#include <map>
-#include <utility>
-#include <algorithm>
+
 using namespace std;
 
 // =====================================================================
