@@ -32,10 +32,6 @@ int Trail::getUndoCount ( void )
 {
 	return numUndo;
 }
-std::stack<std::pair <Variable*, Domain> > Trail::getTrailStack( void )
-{
-	return trailStack;
-}
 
 // =====================================================================
 // Modifiers

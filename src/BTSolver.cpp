@@ -1,5 +1,8 @@
 #include"BTSolver.hpp"
-
+#include <queue>
+#include <map>
+#include <utility>
+#include <algorithm>
 using namespace std;
 
 // =====================================================================
@@ -140,7 +143,10 @@ Variable* BTSolver::getMRV ( void )
         return minV;
     }
     return nullptr;
+<<<<<<< HEAD
+=======
 
+>>>>>>> 45528ffa89e418d955de29255d847cdd46db268c
 }
 
 /**
@@ -199,9 +205,30 @@ vector<int> BTSolver::getValuesInOrder ( Variable* v )
  * Return: A list of v's domain sorted by the LCV heuristic
  *         The LCV is first and the MCV is last
  */
-vector<int> BTSolver::getValuesLCVOrder ( Variable* v )
-{
-	return vector<int>();
+vector<int> BTSolver::getValuesLCVOrder ( Variable* v ) {
+    ConstraintNetwork::VariableSet neighbors = network.getNeighborsOfVariable(v);
+    vector<pair<int, int>> elements;
+    for (int a: v->getDomain()) {
+        pair<int, int> element(a, 0);
+        for (auto vv: neighbors) {
+            if (vv->getDomain().contains(a))
+                element.second++;
+        }
+        elements.push_back(element);
+
+    }
+    sort(elements.begin(), elements.end(), [=](pair<int, int>& a, pair<int, int>& b)
+    {
+        return a.second < b.second;
+    });
+//    for(int i = 0; i < elements.size(); i++)
+//        cout << elements[i].first << " " << elements[i].second << endl;
+
+    vector<int> result;
+    for(int i = 0; i < elements.size(); ++i)
+        result.push_back(elements[i].first);
+
+	return result;
 }
 
 /**

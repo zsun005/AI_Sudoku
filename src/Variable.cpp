@@ -149,8 +149,9 @@ void Variable::removeValueFromDomain ( int val )
 
 	domain.remove(val);
 	modified = domain.isModified();
-	// cannot change changealbe
-	// it's for the value already been assigned default
+	// Addition add by Zexi Sun
+	// After remove value from the domain, and if only one value left
+	// set changeable to false;
 }
 
 // =====================================================================
