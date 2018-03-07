@@ -40,6 +40,8 @@ public:
 
 	bool operator== ( const Variable &other ) const;
 	bool operator!= ( const Variable &other ) const;
+	bool operator< ( const Variable &other ) const;
+	bool operator> ( const Variable &other ) const;
 
 	// Modifiers
 	void setModified ( bool modified );

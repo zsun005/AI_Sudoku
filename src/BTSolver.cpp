@@ -122,7 +122,7 @@ Variable* BTSolver::getfirstUnassignedVariable ( void )
  */
 Variable* BTSolver::getMRV ( void )
 {
-    vector <Variable * > vars;
+    vector <Variable *> vars;
     for (Variable * v : network.getVariables()) {
         if (!v->isAssigned()) {
             vars.push_back(v);
@@ -149,9 +149,45 @@ Variable* BTSolver::getMRV ( void )
  * Return: The unassigned variable with, first, the smallest domain
  *         and, second, the most unassigned neighbors
  */
+
+
 Variable* BTSolver::getDegree ( void )
 {
-	return nullptr;
+	int max_degree = -1;
+	int current_degree=0;
+	Variable * result = nullptr;
+
+//	auto comp = [] (Variable * a, Variable * b) {return a->size() > b->size();};
+//	std::priority_queue<Variable*,vector<Variable*>,function<bool(Variable*, Variable*)>> pq([](Variable* s1, Variable* s2){return s1->size()<s2->size();});
+	std::priority_queue<Variable*> pq;
+
+	for(Variable* v : network.getVariables()){
+		if(!v->isAssigned()){
+			ConstraintNetwork::ConstraintRefSet constraintrefset = network.getConstraintsContainingVariable(v);
+			current_degree = constraintrefset.size();
+//			cout<<"compare current with max: "<<current_degree<<":"<<max_degree<<endl;
+
+			if(current_degree>max_degree){
+				max_degree = current_degree;
+				pq = std::priority_queue<Variable*>();
+				pq.push(v);
+				result = v;
+
+			} else if(current_degree == max_degree){
+				if(result->size()<v->size()){
+					pq.push(v);
+					result = v;
+				}
+
+			}
+		}
+		current_degree=0;
+
+	}
+//	cout<<""<<pq.top()->toString();
+//	result = pq.top();
+//	printf("max degree for current session is %d", max_degree);
+	return result;
 }
 
 /**

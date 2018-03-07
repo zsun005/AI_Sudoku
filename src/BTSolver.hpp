@@ -11,6 +11,8 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <queue>
+
 
 class BTSolver
 {
@@ -25,6 +27,8 @@ public:
 	bool getTournCC       ( void );
 
 	// Variable Selectors (Implement these)
+
+
 	Variable* getfirstUnassignedVariable ( void );
 	Variable* getMRV            ( void );
 	Variable* getDegree         ( void );
