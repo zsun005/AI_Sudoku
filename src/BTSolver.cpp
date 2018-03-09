@@ -1,5 +1,5 @@
 #include"BTSolver.hpp"
-
+#include <queue>
 using namespace std;
 
 // =====================================================================
@@ -51,16 +51,23 @@ bool BTSolver::assignmentsCheck ( void )
  */
 bool BTSolver::forwardChecking ( void )
 {
-    ConstraintNetwork::ConstraintRefSet constraintrefset = network.getModifiedConstraints();
-    for(auto constraint: constraintrefset)
-        for(Variable *var : constraint->vars)
+//    ConstraintNetwork::ConstraintRefSet constraintrefset = network.getModifiedConstraints();
+    auto varset = network.getVariables();
+//	for(auto c: constraintrefset)
+        for(Variable *var : varset)
         {
             if(var->isAssigned())
             {
                 ConstraintNetwork::VariableSet neighbors = network.getNeighborsOfVariable(var);
-                for(auto n : neighbors) {
-                    trail->push(n);
-                    n->removeValueFromDomain(var->getAssignment());
+                for(auto n : neighbors)
+				{
+                    if(n->getDomain().contains(var->getAssignment()))
+					{
+                        trail -> push(n);
+                        n -> removeValueFromDomain(var -> getAssignment());
+                    }
+
+
                     if(!assignmentsCheck())
                         return false;
                 }
@@ -86,7 +93,28 @@ bool BTSolver::forwardChecking ( void )
  */
 bool BTSolver::norvigCheck ( void )
 {
-	return false;
+//	return false;
+    ConstraintNetwork::VariableSet varset = network.getVariables();
+    for(Variable* var : varset)
+    {
+        if(var -> isAssigned())
+        {
+            ConstraintNetwork::VariableSet neighbors = network.getNeighborsOfVariable(var);
+            for(auto n : neighbors)
+            {
+                if(n->isAssigned())
+                    continue;
+                else if(n -> getDomain().contains(var -> getAssignment()))
+                {
+                    trail -> push(n);
+                    n -> removeValueFromDomain(var -> getAssignment());
+                }
+                if(!assignmentsCheck())
+                    return false;
+            }
+        }
+    }
+    return true;
 }
 
 /**
@@ -122,24 +150,43 @@ Variable* BTSolver::getfirstUnassignedVariable ( void )
  */
 Variable* BTSolver::getMRV ( void )
 {
-    vector <Variable *> vars;
-    for (Variable * v : network.getVariables()) {
-        if (!v->isAssigned()) {
-            vars.push_back(v);
-        }
-    }
-    if (!vars.empty()) {
-        int minSize = vars[0]->size();
-        Variable * minV = vars[0];
-        for (int i = 0; i < vars.size(); i++) {
-            if (minSize > vars[i]->size()) {
-                minSize = vars[i]->size();
-                minV = vars[i];
+
+    Variable * to_return = nullptr;
+    int min_size = INT_MAX;
+    for(Variable *v: network.getVariables())
+    {
+        if(!(v -> isAssigned()))
+        {
+            if(v->getDomain().size() < min_size)
+            {
+                min_size = v -> getDomain().size();
+                to_return = v;
             }
         }
-        return minV;
     }
-    return nullptr;
+    return to_return;
+
+//    vector <Variable * > vars;
+//    // combine the two for loops
+//
+//    for (Variable * v : network.getVariables()) {
+//        if (!v->isAssigned()) {
+//            vars.push_back(v);
+//        }
+//    }
+//    if (!vars.empty()) {
+//        int minSize = vars[0]->size();
+//        Variable * minV = vars[0];
+//        for (int i = 0; i < vars.size(); i++) {
+//            if (minSize > vars[i]->size()) {
+//                minSize = vars[i]->size();
+//                minV = vars[i];
+//            }
+//        }
+//        return minV;
+//    }
+//    return nullptr;
+
 }
 
 /**
@@ -149,11 +196,8 @@ Variable* BTSolver::getMRV ( void )
  * Return: The unassigned variable with, first, the smallest domain
  *         and, second, the most unassigned neighbors
  */
-
-
 Variable* BTSolver::getDegree ( void )
 {
-
     Variable * result = nullptr;
     int max_degree = -999;
     for(Variable * v:network.getVariables()){
@@ -224,7 +268,7 @@ Variable* BTSolver::MRVwithTieBreaker ( void )
     }
 
 
-	return result;
+    return result;
 }
 
 /**
@@ -273,7 +317,7 @@ vector<int> BTSolver::getValuesLCVOrder ( Variable* v ) {
     }
     sort(elements.begin(), elements.end(), [=](pair<int, int>& a, pair<int, int>& b)
     {
-        return a.second > b.second;
+        return a.second < b.second;
     });
 //    for(int i = 0; i < elements.size(); i++)
 //        cout << elements[i].first << " " << elements[i].second << endl;

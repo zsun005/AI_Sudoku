@@ -12,18 +12,19 @@ int Variable::namingCounter = 1;
 
 Variable::Variable ( Domain::ValueSet possible_Values, int row, int col, int block ) : domain(possible_Values)
 {
-	if ( domain.size() == 1 )
-	{
-		modified = true;
-		changeable = false;
-	}
-
 	r = row;
 	c = col;
 	b = block;
 	name = "v" + std::to_string(namingCounter++);
 	oldSize = size();
+	modified = false;
 	changeable = true;
+
+	if ( domain.size() == 1 )
+	{
+		modified = true;
+		changeable = false;
+	}
 }
 
 Variable::Variable ( const Variable& v ) : domain(v.domain)
@@ -109,20 +110,12 @@ bool Variable::operator!= ( const Variable &other ) const
 	return !(*this == other);
 }
 
-bool Variable::operator<(const Variable &other) const {
-	return size() < other.size();
-}
-
-
 // =====================================================================
 // Modifiers
 // =====================================================================
 
 void Variable::setModified( bool modified )
 {
-	if ( ! changeable )
-		return;
-
 	this->modified = modified;
 	this->domain.setModified(modified);
 }
@@ -154,9 +147,6 @@ void Variable::removeValueFromDomain ( int val )
 
 	domain.remove(val);
 	modified = domain.isModified();
-	// Addition add by Zexi Sun
-	// After remove value from the domain, and if only one value left
-	// set changeable to false;
 }
 
 // =====================================================================
