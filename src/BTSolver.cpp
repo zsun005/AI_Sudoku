@@ -153,29 +153,6 @@ Variable* BTSolver::getMRV ( void )
 
 Variable* BTSolver::getDegree ( void )
 {
-//	int max_degree = -999;
-//	int current_degree;
-//	Variable * result = nullptr;
-//
-//	for(Variable* v : network.getVariables()){
-//		if(!v->isAssigned()){
-//			current_degree = 0;
-//            ConstraintNetwork::VariableSet neighbors = network.getNeighborsOfVariable(v);
-//            for(Variable* n : neighbors){
-//                if(!(n->isAssigned())){
-//                    current_degree++;
-//                }
-//            }
-////            cout<<"compare current with max: "<<current_degree<<":"<<max_degree<<endl;
-//			if(current_degree>max_degree){
-//				max_degree = current_degree;
-//				result = v;
-//			}
-//		}
-//	}
-//
-//    cout<<"select complete:"<<result->toString()<<endl;
-//	return result;
 
     Variable * result = nullptr;
     int max_degree = -999;
@@ -206,7 +183,48 @@ Variable* BTSolver::getDegree ( void )
  */
 Variable* BTSolver::MRVwithTieBreaker ( void )
 {
-	return nullptr;
+
+    vector <Variable *> vars_with_same_domain;
+    int minSize = 999;
+    Variable * result = nullptr;
+
+    for(Variable * v : network.getVariables()){
+        if(!v->isAssigned()){
+            if(v->size()<minSize){
+                minSize = v->size();
+                vector <Variable*> temp;
+                vars_with_same_domain = temp;
+                vars_with_same_domain.push_back(v);
+            } else if(v->size()==minSize){
+                vars_with_same_domain.push_back(v);
+            }
+        }
+
+    }
+    if(!vars_with_same_domain.empty()){
+        int max_degree = -999;
+        for(Variable * v1: vars_with_same_domain){
+            if(!v1->isAssigned()){
+                int current_degree = 0;
+                for(Variable * n:network.getNeighborsOfVariable(v1)){
+                    if(!n->isAssigned()){
+                        current_degree++;
+
+                    }
+                }
+                if(current_degree>max_degree){
+                    max_degree = current_degree;
+                    result = v1;
+                }
+            }
+        }
+    } else {
+        cout<<"smallest domain vars is empty"<<endl;
+        return nullptr;
+    }
+
+
+	return result;
 }
 
 /**
