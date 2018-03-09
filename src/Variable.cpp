@@ -109,12 +109,8 @@ bool Variable::operator!= ( const Variable &other ) const
 	return !(*this == other);
 }
 
-bool Variable::operator < (const Variable &other) const {
-	return (*this).size() < other.size();
-}
-
-bool Variable::operator > (const Variable &other) const {
-	return (*this).size() > other.size();
+bool Variable::operator<(const Variable &other) const {
+	return size() < other.size();
 }
 
 

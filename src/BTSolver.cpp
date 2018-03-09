@@ -153,41 +153,48 @@ Variable* BTSolver::getMRV ( void )
 
 Variable* BTSolver::getDegree ( void )
 {
-	int max_degree = -1;
-	int current_degree=0;
-	Variable * result = nullptr;
+//	int max_degree = -999;
+//	int current_degree;
+//	Variable * result = nullptr;
+//
+//	for(Variable* v : network.getVariables()){
+//		if(!v->isAssigned()){
+//			current_degree = 0;
+//            ConstraintNetwork::VariableSet neighbors = network.getNeighborsOfVariable(v);
+//            for(Variable* n : neighbors){
+//                if(!(n->isAssigned())){
+//                    current_degree++;
+//                }
+//            }
+////            cout<<"compare current with max: "<<current_degree<<":"<<max_degree<<endl;
+//			if(current_degree>max_degree){
+//				max_degree = current_degree;
+//				result = v;
+//			}
+//		}
+//	}
+//
+//    cout<<"select complete:"<<result->toString()<<endl;
+//	return result;
 
-//	auto comp = [] (Variable * a, Variable * b) {return a->size() > b->size();};
-//	std::priority_queue<Variable*,vector<Variable*>,function<bool(Variable*, Variable*)>> pq([](Variable* s1, Variable* s2){return s1->size()<s2->size();});
-	std::priority_queue<Variable*> pq;
+    Variable * result = nullptr;
+    int max_degree = -999;
+    for(Variable * v:network.getVariables()){
+        if(!v->isAssigned()){
+            int current_degree = 0;
+            for(Variable * n:network.getNeighborsOfVariable(v)){
+                if(!n->isAssigned()){
+                    current_degree++;
 
-	for(Variable* v : network.getVariables()){
-		if(!v->isAssigned()){
-			ConstraintNetwork::ConstraintRefSet constraintrefset = network.getConstraintsContainingVariable(v);
-			current_degree = constraintrefset.size();
-//			cout<<"compare current with max: "<<current_degree<<":"<<max_degree<<endl;
-
-			if(current_degree>max_degree){
-				max_degree = current_degree;
-				pq = std::priority_queue<Variable*>();
-				pq.push(v);
-				result = v;
-
-			} else if(current_degree == max_degree){
-				if(result->size()<v->size()){
-					pq.push(v);
-					result = v;
-				}
-
-			}
-		}
-		current_degree=0;
-
-	}
-//	cout<<""<<pq.top()->toString();
-//	result = pq.top();
-//	printf("max degree for current session is %d", max_degree);
-	return result;
+                }
+            }
+            if(current_degree>max_degree){
+                max_degree = current_degree;
+                result = v;
+            }
+        }
+    }
+    return result;
 }
 
 /**
